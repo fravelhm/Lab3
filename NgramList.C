@@ -123,6 +123,7 @@ void NgramList::insertNgram(std::string s)
       if (ptr->ngram == s) 
       {
          ptr->count++;
+         delete newNode;
          return;
       }
       ptr = ptr->next;
