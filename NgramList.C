@@ -43,7 +43,8 @@ NgramList::~NgramList()
    while (first != NULL)
    {
       nextNgram = first->next;
-      free(first);
+      //free(first);
+      delete first;
       first = nextNgram;
    }
 }
