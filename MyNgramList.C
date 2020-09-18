@@ -50,6 +50,8 @@ NgramList::~NgramList()
       delete first;
       first = nextNgram;
    }
+   //Remove our ngramArray from memory
+   free(ngramArray);
 }
 
 /*
@@ -178,9 +180,9 @@ void NgramList::sortByCount()
    linkedToArray();
    // Now our ngramArray contains an array of ngrams data types
    // We can not use merge sort to iterate over the array and sort by ngGram count
-   
+   mergeSort(0, ngramTotal-1);
    // Part II WORK Ends
-   
+/*   
    while (ptr != NULL)
    {
       ptr1 = first; 
@@ -201,6 +203,7 @@ void NgramList::sortByCount()
       }
       ptr = ptr->next;
    }
+   */
 }
 
 /*  Added as a part of PART 2 Work
@@ -224,6 +227,71 @@ void NgramList::linkedToArray() {
 }
 
 /*
+ *
+ *
+ *
+ */
+
+void NgramList::mergeSort(int beg, int end)
+{
+  int mid = beg+(end-beg)/2;
+  if(beg < end)
+  {
+    mergeSort(beg, mid);
+    mergeSort(mid+1, end);
+    merge(beg, mid, end);
+  }
+}
+
+/*
+*
+*
+*
+*/
+void NgramList::merge(int beg, int mid, int end)
+{
+  Ngram_t * tmp[end-beg+1];
+  int i = beg; 
+  int j = mid+1;
+  int k=0;
+
+  while(i <= mid && j <= end)
+  {
+    if(ngramArray[i]->count >= ngramArray[j]->count)
+    {
+      tmp[k] = ngramArray[i];
+      k++;
+      i++;
+    }
+    else
+    {
+      tmp[k] = ngramArray[j];
+      k++;
+      j++;
+    }
+  }
+
+  while(i <= mid)
+  {
+    tmp[k] = ngramArray[i];
+    k++;
+    i++;
+  }
+
+  while(j <= end)
+  {
+    tmp[k] = ngramArray[j];
+    k++;
+    j++;
+  }
+
+  for(i = beg; i<=end; i++)
+  {
+    ngramArray[i] = tmp[i-beg];
+  }
+}
+
+/*
  * operator<<
  *
  * prints the list of ngrams
@@ -236,11 +304,17 @@ std::ostream& operator<<(std::ostream& os, const NgramList & nglst)
 {
    cout << "List of " << nglst.ngramSz << " word ngrams and counts\n";
    cout << "--------------------------------\n";
+   /*
    NgramList::Ngram_t * ptr = nglst.first;
    while (ptr != NULL)
    {
       cout << ptr->ngram << ", " << ptr->count << endl;
       ptr = ptr->next;
-   } 
+   }
+   */
+   for(int i = 0; i<nglst.ngramTotal; i++)
+   {
+     cout << nglst.ngramArray[i]->ngram << ", " << nglst.ngramArray[i]->count << endl;
+   }
    return os;
 }

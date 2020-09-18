@@ -23,7 +23,9 @@ class NgramList
       NgramList(int ngramSz, const WordList & wl);
       ~NgramList();
       void sortByCount();
-      void linkedToArray();
+      void linkedToArray(); //Added as part of part II
+      void merge(int beg, int mid, int end); //Added as part of part II
+      void mergeSort(int beg, int end); //Added as part of part II
       friend std::ostream& operator<<(std::ostream& os, const NgramList & nl);
 };
 
