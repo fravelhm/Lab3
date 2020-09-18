@@ -13,7 +13,7 @@
 #include <string>
 #include <cstring>
 #include "WordList.h"
-#include "NgramList.h"
+#include "MyNgramList.h"
 
 using namespace std;
 
