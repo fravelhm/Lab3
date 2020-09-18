@@ -12,6 +12,8 @@ class NgramList
 
    private:
       Ngram_t * first;
+      Ngram_t ** ngramArray;  //Added as part of part II
+      int ngramTotal;  //Added as part of part II
       int ngramSz;
       void insertNgram(std::string s);
       std::string getNextNgram(WordList::const_iterator start, 
@@ -21,6 +23,7 @@ class NgramList
       NgramList(int ngramSz, const WordList & wl);
       ~NgramList();
       void sortByCount();
+      void linkedToArray();
       friend std::ostream& operator<<(std::ostream& os, const NgramList & nl);
 };
 

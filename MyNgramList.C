@@ -21,6 +21,9 @@ NgramList::NgramList(int ngramSz, const WordList & wl)
 {
    this->ngramSz = ngramSz;
    WordList::const_iterator p;
+
+   ngramTotal = 0;  //Initialize our ngramTotal counter (PART II work)
+   
    first = NULL;
    p = wl.begin();
    while (p != wl.end())
@@ -131,10 +134,12 @@ void NgramList::insertNgram(std::string s)
    //insert in front of list
    newNode->next = first;
    first = newNode;
+   ngramTotal++;
 }
 
 
-/*
+/* !!!! Original Notes !!!!
+ *
  * sortByCount
  *
  * performs a bubble sort on the linked list of ngrams, sorting the
@@ -142,6 +147,16 @@ void NgramList::insertNgram(std::string s)
  *
  * param: none
  * return: none (modfied private linked list)
+ */
+/*
+ * !!!! PART 2 - New Notes !!!!
+ *
+ * sortByCount
+ * 
+ * Works in two steps:
+ * 1. Converts linked list to an array
+ * 2. Perfoms a mergeSort on an array, sorting the items in the list by the count
+ *
  */
 void NgramList::sortByCount()
 {
@@ -151,6 +166,21 @@ void NgramList::sortByCount()
    int tcount;
    string tngram;
 
+   // Part II WORK Begins
+   
+   // Initialize our ngramArray to the correct size
+   // Will use calloc
+   // Calloc will allocate memory for an array of num objects of size and 
+   // initializes all bytes in the allocated storage to zero. 
+   ngramArray = (Ngram_t **) calloc(ngramTotal, sizeof(ptr));
+   // Now that memory for our ngramArray has been properly allocated
+   // Call our linkedToArray function to "place" linked list into our array
+   linkedToArray();
+   // Now our ngramArray contains an array of ngrams data types
+   // We can not use merge sort to iterate over the array and sort by ngGram count
+   
+   // Part II WORK Ends
+   
    while (ptr != NULL)
    {
       ptr1 = first; 
@@ -171,6 +201,26 @@ void NgramList::sortByCount()
       }
       ptr = ptr->next;
    }
+}
+
+/*  Added as a part of PART 2 Work
+ *
+ * linkedToArray
+ *
+ * Converts a linked list to an array
+ *
+ *
+ */
+void NgramList::linkedToArray() {
+  Ngram_t * ptr = first;
+  int i = 0;
+  //Itereate over the linked list
+  while(ptr != NULL)
+  {
+    ngramArray[i] = ptr;
+    ptr = ptr->next;
+    i++;
+  }
 }
 
 /*
