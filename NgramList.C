@@ -2,17 +2,29 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
+#include <map> // Added as part of PART II
+#include <set> // Added as part of PART II
+#include <algorithm> // Added as part of PART II
+
 #include "WordList.h"
 #include "NgramList.h"
 
 using namespace std;
 
 /*
+ * PART II Notes
+ *
+ * Uses a map in place of linked list
+ * Map is defined in header and is called "mapOfNgrams"
+ *
+ */
+
+/*
  * NgramList
  *
  * takes as input the size of the ngrams to be built and the list  
- * of words to build the ngrams from and builds a linked list of 
- * ngrams.
+ * of words to build a map
  *
  * param: int ngramSz - size of the ngram
  * param: const WordList & wl - list of the words use
@@ -21,7 +33,8 @@ NgramList::NgramList(int ngramSz, const WordList & wl)
 {
    this->ngramSz = ngramSz;
    WordList::const_iterator p;
-   first = NULL;
+   //first = NULL;
+   int nGramTotal = 0;
    p = wl.begin();
    while (p != wl.end())
    {
@@ -39,14 +52,7 @@ NgramList::NgramList(int ngramSz, const WordList & wl)
  */
 NgramList::~NgramList()
 {
-   Ngram_t * nextNgram;
-   while (first != NULL)
-   {
-      nextNgram = first->next;
-      //free(first);
-      delete first;
-      first = nextNgram;
-   }
+  //free(ngramArray);
 }
 
 /*
@@ -103,36 +109,109 @@ std::string NgramList::getNextNgram(WordList::const_iterator start,
 /*
  * insertNgram
  *
- * looks for the ngram to be inserted. If it is already in
- * the linked list,  it increments the count. If not, it 
- * inserts it into the linked list.
+ * looks for the ngram to be inserted
+ * if ngram is already in map then increment that value
+ * associated to mapped value 
+ * Very similiar to a hashmap where we have a key and a value 
  *
  * param: std::string s - ngram to be inserted
  * return: none
  */
 void NgramList::insertNgram(std::string s)
 {
-   Ngram_t * ptr = first;
-   Ngram_t * newNode = new Ngram_t();
-   newNode->ngram = s;
-   newNode->count = 1;
 
-   while (ptr != NULL)
-   {
-      //s already in list
-      if (ptr->ngram == s) 
-      {
-         ptr->count++;
-         delete newNode;
-         return;
-      }
-      ptr = ptr->next;
-   }
-   //insert in front of list
-   newNode->next = first;
-   first = newNode;
+  //Very easy to insert using map.  Very similiar syntax as python
+  // mapOfNgrams["String Key"] = Int Value;
+
+  bool alreadyExists = (mapOfNgrams.find(s) != mapOfNgrams.end());
+  if(alreadyExists)
+  {
+    //Increment our value that exists where our key is the the string
+    mapOfNgrams.at(s)++;
+  }
+  else
+  {
+    nGramTotal++;
+    //Insert into our map as a new key value pair 
+    mapOfNgrams[s] = 1;
+  }
+
 }
 
+/*
+ * Create a simple string array contains the key values for our map
+ *
+ */
+void NgramList::mapKeyToArray()
+{
+  ngramArray = new string[nGramTotal];
+  int i = 0;
+    for(const auto &aPair: mapOfNgrams)
+    {
+      ngramArray[i] = aPair.first;
+      i++;
+    }
+}
+
+
+void NgramList::mergeSort(int beg, int end)
+{
+  int mid = beg+(end-beg)/2;
+  if(beg < end)
+  {
+    mergeSort(beg, mid);
+    mergeSort(mid+1, end);
+    merge(beg, mid, end);
+  }
+}
+
+/*
+*
+*
+*
+*/
+void NgramList::merge(int beg, int mid, int end)
+{
+  std::string tmp[end-beg+1];
+  int i = beg; 
+  int j = mid+1;
+  int k=0;
+
+  while(i <= mid && j <= end)
+  {
+    if(mapOfNgrams.at(ngramArray[i]) >= mapOfNgrams.at(ngramArray[j]))
+    {
+      tmp[k] = ngramArray[i];
+      k++;
+      i++;
+    }
+    else
+    {
+      tmp[k] = ngramArray[j];
+      k++;
+      j++;
+    }
+  }
+
+  while(i <= mid)
+  {
+    tmp[k] = ngramArray[i];
+    k++;
+    i++;
+  }
+
+  while(j <= end)
+  {
+    tmp[k] = ngramArray[j];
+    k++;
+    j++;
+  }
+
+  for(i = beg; i<=end; i++)
+  {
+    ngramArray[i] = tmp[i-beg];
+  }
+}
 
 /*
  * sortByCount
@@ -145,33 +224,10 @@ void NgramList::insertNgram(std::string s)
  */
 void NgramList::sortByCount()
 {
-   Ngram_t * ptr = first;
-   Ngram_t * ptr1;
-   Ngram_t * ptr2;
-   int tcount;
-   string tngram;
-
-   while (ptr != NULL)
-   {
-      ptr1 = first; 
-      ptr2 = ptr1->next;
-      while (ptr2 != NULL) 
-      {
-         if (ptr2->count > ptr1->count)
-         {
-            tcount = ptr1->count;
-            tngram = ptr1->ngram;
-            ptr1->count = ptr2->count;
-            ptr1->ngram = ptr2->ngram; 
-            ptr2->count = tcount;
-            ptr2->ngram = tngram;
-         }
-         ptr1 = ptr2; 
-         ptr2 = ptr2->next;
-      }
-      ptr = ptr->next;
-   }
-}
+  mapKeyToArray();
+  
+  mergeSort(0, nGramTotal-1);
+}  
 
 /*
  * operator<<
@@ -186,11 +242,10 @@ std::ostream& operator<<(std::ostream& os, const NgramList & nglst)
 {
    cout << "List of " << nglst.ngramSz << " word ngrams and counts\n";
    cout << "--------------------------------\n";
-   NgramList::Ngram_t * ptr = nglst.first;
-   while (ptr != NULL)
+   for(int i = 0; i<nglst.nGramTotal; i++)
    {
-      cout << ptr->ngram << ", " << ptr->count << endl;
-      ptr = ptr->next;
-   } 
+     cout << nglst.ngramArray[i] << ", " << nglst.mapOfNgrams.at(nglst.ngramArray[i]) << endl;
+
+   }
    return os;
 }

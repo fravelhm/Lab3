@@ -163,10 +163,10 @@ void NgramList::insertNgram(std::string s)
 void NgramList::sortByCount()
 {
    Ngram_t * ptr = first;
-   Ngram_t * ptr1;
-   Ngram_t * ptr2;
-   int tcount;
-   string tngram;
+   //Ngram_t * ptr1;
+   //Ngram_t * ptr2;
+   //int tcount;
+   //string tngram;
 
    // Part II WORK Begins
    
@@ -227,8 +227,9 @@ void NgramList::linkedToArray() {
 }
 
 /*
- *
- *
+ * mergeSort 
+ * 
+ * mergeSort algo implementer
  *
  */
 
@@ -244,8 +245,9 @@ void NgramList::mergeSort(int beg, int end)
 }
 
 /*
+*  merge
 *
-*
+*  Implemetns mergeSort algo
 *
 */
 void NgramList::merge(int beg, int mid, int end)

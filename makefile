@@ -7,8 +7,8 @@ LFLAGS = -pg
 .C.o:
 	$(CC) $(CFLAGS) $< -o $@
 
-my-ngram: MyNgramList.o WordList.o myMain.o
-	$(CC) $(LFLAGS) $(MYOBJS) -o my-ngram
+#my-ngram: MyNgramList.o WordList.o myMain.o
+#	$(CC) $(LFLAGS) $(MYOBJS) -o my-ngram
 
 ngram: NgramList.o WordList.o main.o
 	$(CC) $(LFLAGS) $(OBJS) -o ngram
